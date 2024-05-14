@@ -1,8 +1,60 @@
+NAME_MIN_WORD = 2
+NAME_MAX_WORD = 3
+MAX_POINTS = 10
+
 def create_character():
     """
     This function will create the character by getting the name, charisma points, and stealth points.
+    charcter will have a first last or first middle last name (2 words or more)
     :return: the name, charisma points, and stealth points in a dictionary
     """
+
+    name_pass = False
+    character = {}
+
+    #handles user entering name
+    #makes sure user is entering a name with 2 words and no more than 3 words 
+    while(name_pass == False):
+        name = input("Enter your full name: ")
+        name_list = name.split()
+
+        if name_list >= NAME_MIN_WORD and name_list <= NAME_MAX_WORD:
+            character["name"] = name
+
+            name_pass = True
+    
+    points_pass = False
+    
+    while(points_pass != True):
+        curr_pts = 10
+        charisma_pts = int(input("How many points would you like to allocate to charisma?: "))
+
+        if charisma_pts >  MAX_POINTS:
+            print("Invalid choice, points must be 10 or less")
+
+        #all points are given so no need to allocate points for stealth
+        if charisma_pts == MAX_POINTS:
+            print("Max points given. Character setup is complete")
+            character["charisma"] = charisma_pts
+            character["stealth"] = 0
+       
+        if charisma_pts <= MAX_POINTS:
+            curr_pts = MAX_POINTS - curr_pts
+            print("Points remaining is ", +str(curr_pts))
+
+            stealth_pass = False
+
+            while(stealth_pass != True):
+                stealth_pts = int(input("How many points would you like to put into Stealth?: "))
+                
+                if(stealth_pts > curr_pts)
+
+        
+            
+
+    return character
+
+    
 
 def load_events(event_file_name):
     """
