@@ -1,6 +1,7 @@
 NAME_MIN_WORD = 2
 NAME_MAX_WORD = 3
 MAX_POINTS = 10
+ZERO_POINTS = 0
 
 def create_character():
     """
@@ -18,42 +19,61 @@ def create_character():
         name = input("Enter your full name: ")
         name_list = name.split()
 
-        if name_list >= NAME_MIN_WORD and name_list <= NAME_MAX_WORD:
+        #name must be 2 or 3 words
+        if len(name_list) >= NAME_MIN_WORD and len(name_list) <= NAME_MAX_WORD:
             character["name"] = name
 
             name_pass = True
+        
+        else:
+            print("Invalid Name, Must have 2 or 3 words")
     
-    points_pass = False
-    
-    while(points_pass != True):
-        curr_pts = 10
+    charisma_pass = False
+    stealth_pass = False
+
+    curr_pts = MAX_POINTS
+
+    #allocates points to charisma
+    while(charisma_pass != True):
         charisma_pts = int(input("How many points would you like to allocate to charisma?: "))
 
         if charisma_pts >  MAX_POINTS:
             print("Invalid choice, points must be 10 or less")
-
-        #all points are given so no need to allocate points for stealth
-        if charisma_pts == MAX_POINTS:
-            print("Max points given. Character setup is complete")
-            character["charisma"] = charisma_pts
-            character["stealth"] = 0
        
         if charisma_pts <= MAX_POINTS:
-            curr_pts = MAX_POINTS - curr_pts
-            print("Points remaining is ", +str(curr_pts))
+            if charisma_pts == MAX_POINTS:
+                print("Max points given. Character setup is complete")
+                character["charisma"] = charisma_pts
+                character["stealth"] = 0
+                charisma_pass = True
+                stealth_pass = True
 
-            stealth_pass = False
+            else:
+                curr_pts = curr_pts - charisma_pts
+                print("Points remaining is ", str(curr_pts))
+                character["charisma"] = charisma_pts
+                charisma_pass = True
 
-            while(stealth_pass != True):
-                stealth_pts = int(input("How many points would you like to put into Stealth?: "))
-                
-                if(stealth_pts > curr_pts)
 
+    #allocates points to stealth if there are points left over
+    while(stealth_pass != True):
+        stealth_pts = int(input("How many points would you like to put into stealth?: "))
         
+        if(stealth_pts > curr_pts):
+            print("Invalid entry, exceeds curr points left")
+        
+        if(stealth_pts <= curr_pts):
+            curr_pts_test = ZERO_POINTS
+            curr_pts_test = curr_pts - stealth_pts
+
+            if curr_pts_test != ZERO_POINTS:
+                print("all points must be allocated.")
             
-
+            else:
+                character["stealth"] = stealth_pts
+                stealth_pass = True
+    
     return character
-
     
 
 def load_events(event_file_name):
@@ -80,3 +100,6 @@ def play_game(start_time, game_map, events):
     """
 
 if __name__ =="__main__":
+
+    new_char = create_character()
+    print(new_char)
