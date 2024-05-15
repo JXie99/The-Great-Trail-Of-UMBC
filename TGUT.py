@@ -2,6 +2,9 @@ NAME_MIN_WORD = 2
 NAME_MAX_WORD = 3
 MAX_POINTS = 10
 ZERO_POINTS = 0
+STARTING_POINT = 1
+DESTINATION = 2
+
 
 def create_character():
     """
@@ -83,12 +86,46 @@ def load_events(event_file_name):
     :return: the events in a dictionary that we can use
     """
 
+    with open(event_file_name) as file:
+        event_dict = {}
+
+        for x in file:
+            line_list = x.strip().split(",")
+
+            event_dict[line_list[0]] = {}
+            event_dict[line_list[0]]["event txt"] = line_list[1]
+            event_dict[line_list[0]]["event win txt"] = line_list[2]
+            event_dict[line_list[0]]["event lose txt"] = line_list[3]
+            event_dict[line_list[0]]["charisma to win"] = int(line_list[4])
+            event_dict[line_list[0]]["stealth to win"] = int(line_list[5])
+            event_dict[line_list[0]]["time lost"] = int(line_list[6])
+
+        print(event_dict)    
+
+
+
 def load_map(map_file_name):
     """
     This function will take a file with a list of locations and return a map that we can use
     :param map_file_name: the file with the locations
     :return: a map for rest of the program to use
     """
+    map ={}
+    with open(map_file_name) as f:
+
+        for x in f:
+            curr_item = x.strip().split(", ")
+            temp_dest = ""
+
+            if len(curr_item) == STARTING_POINT:
+                map[curr_item[0]] = {}
+                temp_dest = curr_item[0]
+            
+            if len(curr_item) == DESTINATION:
+                map[temp_dest][curr_item[0]] = curr_item[1]
+                
+
+
 
 def play_game(start_time, game_map, events):
     """
@@ -101,5 +138,8 @@ def play_game(start_time, game_map, events):
 
 if __name__ =="__main__":
 
-    new_char = create_character()
-    print(new_char)
+    #new_char = create_character()
+    #print(new_char)
+
+    #load_map("maps.txt")
+    load_events("events.txt")
