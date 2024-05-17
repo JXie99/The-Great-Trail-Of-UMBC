@@ -4,6 +4,14 @@ MAX_POINTS = 10
 ZERO_POINTS = 0
 STARTING_POINT = 1
 DESTINATION = 2
+START = "The Dorms"
+END = "ITE"
+EVENT_TXT = "event_txt"
+EVENT_W = "event win txt"
+EVENT_L = "event lose txt"
+CHARISMA_W = "charisma to win"
+STEALTH_W = "stealth to win"
+TIME_L = "time to lose"
 
 
 def create_character():
@@ -93,12 +101,14 @@ def load_events(event_file_name):
             line_list = x.strip().split(",")
 
             event_dict[line_list[0]] = {}
-            event_dict[line_list[0]]["event txt"] = line_list[1]
-            event_dict[line_list[0]]["event win txt"] = line_list[2]
-            event_dict[line_list[0]]["event lose txt"] = line_list[3]
-            event_dict[line_list[0]]["charisma to win"] = int(line_list[4])
-            event_dict[line_list[0]]["stealth to win"] = int(line_list[5])
-            event_dict[line_list[0]]["time lost"] = int(line_list[6])
+            event_dict[line_list[0]][EVENT_TXT] = line_list[1]
+            event_dict[line_list[0]][EVENT_W] = line_list[2]
+            event_dict[line_list[0]][EVENT_L] = line_list[3]
+            event_dict[line_list[0]][CHARISMA_W] = int(line_list[4])
+            event_dict[line_list[0]][STEALTH_W] = int(line_list[5])
+            event_dict[line_list[0]][TIME_L] = int(line_list[6])
+        
+        return event_dict
 
 
 def load_map(map_file_name):
@@ -119,7 +129,8 @@ def load_map(map_file_name):
             
             if len(curr_item) == DESTINATION:
                 map[temp_dest][curr_item[0]] = int(curr_item[1])
-                
+            
+        return map        
 
 
 
@@ -132,11 +143,65 @@ def play_game(start_time, game_map, events):
     :return: nothing
     """
 
-    new_character = create_character()
     print("You are currently in The Dorms and have ", start_time, " seconds left. Where would you like to go?")
+
+    curr_time = start_time
+    curr_location = START
+    prev_location = START
+    
+    while(curr_time > 0 and curr_location != END):
+        print("You are currently in ", curr_location, " and have ", curr_time, "to go to ITE.")
+        
+        #prints out places to go from the dorms
+        for places_to_go in game_map:
+            if places_to_go == curr_location:
+                for possible_places, time in (game_map[curr_location].items()):
+                    print(possible_places, time)
+
+        #updates prev location before moving on to next location
+        prev_location = curr_location
+
+        curr_location = input("Where would you like to go next?: ")
+
+        #makes sure user input is valid for next area
+        while curr_location not in game_map[prev_location]:
+            curr_location = input("Not a valid input, try again: ")
+
+        #reduces time to user 
+        curr_time = curr_time - game_map[prev_location][curr_location]
+
+        #trigger event as user enters new area
+        if curr_location in events:
+            print(events[curr_location][EVENT_TXT])
+
+            #checks if user has the right stats to win the event
+            if stats["stealth"] >= events[curr_location][STEALTH_W] and stats["charisma"] >= events[curr_location][CHARISMA_W]:
+                print(events[curr_location][EVENT_W])
+            
+            else:
+                #user loses time if he does not have enough stats to pass event
+                print(events[curr_location][EVENT_L])
+
+                curr_time = curr_time - (events[curr_location][TIME_L])
+                print("You have lost ", int(events[curr_location][TIME_L]), " seconds")
+                curr_location = curr_location
+
+
+        if curr_time < 0:
+            print("Due to time running out, Game Over")
+
+        if curr_location == END:
+            print("You made it to the ITE and can now learn the secrets of Computer Science! You win!")
+
+            
+
 
 if __name__ =="__main__":
 
-    load_map("maps.txt")
-    load_events("events.txt")
+    map_file =load_map("maps.txt")
+    events_file = load_events("events.txt")
+
+    stats = create_character()
+
     game_time = int(input("How many seconds would you like to have? "))
+    play_game(game_time, map_file, events_file)
